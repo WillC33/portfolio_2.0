@@ -215,7 +215,7 @@ async function copyFiles() {
   log('Copying and minifying files...');
 
   const htmlFiles = ['index.html', 'profile.html', 'projects.html', 'blog.html'];
-  const assetFiles = ['tiny.jpg', 'normal.jpg'];
+  const assetFiles = ['tiny.jpg', 'normal.jpg', 'favicon.ico'];
 
   for (const file of htmlFiles) {
     const srcPath = path.join(srcDir, file);
