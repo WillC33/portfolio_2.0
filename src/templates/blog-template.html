@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="{{description}}">
+<meta name="author" content="William Cooke">
+<meta property="og:title" content="{{title}} - William Cooke">
+<meta property="og:description" content="{{description}}">
+<meta property="og:type" content="article">
+<title>{{title}} - William Cooke</title>
+<style>
+  :root {
+    --bg: #121212;
+    --fg: #e0e0e0;
+    --secondary: #a0a0a0;
+    --accent: #bb86fc;
+    --muted: #707070;
+    --code-bg: #1a1a1a;
+    --border: rgba(224, 224, 224, 0.15);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Fira Code', 'JetBrains Mono', 'SF Mono', monospace;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .back-nav {
+    margin-bottom: 2rem;
+  }
+
+  .back-nav a {
+    color: var(--secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+  }
+
+  .back-nav a:hover {
+    color: var(--accent);
+  }
+
+  .back-nav a::before {
+    content: '← ';
+  }
+
+  .article-header {
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 2rem;
+  }
+
+  .article-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .tag {
+    background: rgba(187, 134, 252, 0.1);
+    color: var(--accent);
+    padding: 0.2rem 0.5rem;
+    border: 1px solid rgba(187, 134, 252, 0.2);
+    font-size: 0.7rem;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-weight: 400;
+    text-transform: lowercase;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  h1::after {
+    content: '_';
+    animation: cursor 1.5s infinite;
+    color: var(--accent);
+  }
+
+  @keyframes cursor {
+
+    0%,
+    50% {
+      opacity: 1;
+    }
+
+    51%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .lead {
+    font-size: 1.1rem;
+    color: var(--secondary);
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  .article-content h2 {
+    font-size: 1.4rem;
+    margin: 2rem 0 1rem;
+    color: var(--fg);
+    text-transform: lowercase;
+  }
+
+  .article-content h3 {
+    font-size: 1.2rem;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--secondary);
+  }
+
+  .article-content p {
+    margin-bottom: 1.5rem;
+    color: var(--fg);
+  }
+
+  .article-content ul,
+  .article-content ol {
+    margin: 1rem 0 1.5rem 1.5rem;
+  }
+
+  .article-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .article-content blockquote {
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    color: var(--secondary);
+    font-style: italic;
+  }
+
+  .article-content code {
+    background: var(--code-bg);
+    padding: 0.2rem 0.4rem;
+    border: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: var(--accent);
+  }
+
+  .article-content pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 1rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    font-size: 0.85rem;
+  }
+
+  .article-content pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--fg);
+  }
+
+  .article-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .footer-nav a {
+    color: var(--secondary);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+  }
+
+  .footer-nav a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .footer-nav a::before {
+    content: '[ ';
+    color: var(--muted);
+  }
+
+  .footer-nav a::after {
+    content: ' ]';
+    color: var(--muted);
+  }
+
+  .footer-nav a:hover::before,
+  .footer-nav a:hover::after {
+    color: var(--accent);
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 1rem;
+    }
+
+    .article-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .footer-nav {
+      flex-direction: column;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    h1::after {
+      animation: none;
+    }
+  }
+</style>
+
+<div class="container">
+  <nav class="back-nav">
+    <a href="#" onclick="history.back(); return false;">back</a>
+  </nav>
+
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="date">{{date}}</span>
+      <span class="read-time">{{readTime}} min read</span>
+      <div class="tags">
+        {{tags}}
+      </div>
+    </div>
+    <h1>{{title}}</h1>
+    <p class="lead">{{lead}}</p>
+  </header>
+
+  <article class="article-content">
+    {{content}}
+  </article>
+
+  <footer class="article-footer">
+    <nav class="footer-nav">
+      <a href="/">home</a>
+      <a href="/blog/">blog</a>
+      <a href="/projects/">projects</a>
+    </nav>
+  </footer>
+</div>
+
+</html>

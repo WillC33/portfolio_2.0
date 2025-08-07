@@ -1,0 +1,306 @@
+<div id="blog" class="page hidden">
+  <div class="social">
+    <a href="mailto:william@williamcooke.net" aria-label="Email William">✉️</a>
+    <a href="https://www.linkedin.com/in/williamcooke33/" aria-label="LinkedIn Profile">💼</a>
+    <a href="https://github.com/WillC33" aria-label="GitHub Profile">💻</a>
+  </div>
+
+  <h2>blog</h2>
+
+  <div class="blog-intro">
+    <p class="intro-text">thoughts on functional programming, software architecture, and the craft of building reliable
+      systems</p>
+  </div>
+
+  <div class="posts-list" id="blog-posts-list">
+    <div class="loading">loading posts...</div>
+  </div>
+
+  <div class="load-more" id="blog-load-more" style="display: none;">
+    <button onclick="loadNextBlogChunk()">load more posts</button>
+  </div>
+
+  <nav class="nav" role="navigation">
+    <li onclick='nav("home")' tabindex="0" role="button">home</li>
+    <li onclick='nav("profile")' tabindex="0" role="button">profile</li>
+    <li onclick='nav("projects")' tabindex="0" role="button">projects</li>
+  </nav>
+</div>
+
+<style>
+  /* Blog-specific toned-down aesthetic */
+  #blog {
+    --blog-primary: #e0e0e0;
+    --blog-secondary: #a0a0a0;
+    --blog-accent: #ffffff;
+    --blog-muted: #707070;
+    --blog-link: #bb86fc;
+  }
+
+  #blog .social {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  #blog .social a {
+    color: var(--blog-primary);
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: color 0.2s ease;
+  }
+
+  #blog .social a:hover {
+    color: var(--blog-accent);
+  }
+
+  #blog h2 {
+    font-size: clamp(2rem, 6vw, 3rem);
+    text-align: left;
+    margin: 2rem 0 1rem;
+    color: var(--blog-primary);
+    text-transform: lowercase;
+    font-family: 'Fira Code', monospace;
+    position: relative;
+  }
+
+  /* Very subtle glitch effect only on title */
+  #blog h2::after {
+    content: '_';
+    animation: cursor-blink 1.5s infinite;
+    color: var(--blog-link);
+  }
+
+  @keyframes cursor-blink {
+
+    0%,
+    50% {
+      opacity: 1;
+    }
+
+    51%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .blog-intro {
+    margin: 2rem 0 3rem;
+  }
+
+  .intro-text {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--blog-secondary);
+    opacity: 0.9;
+  }
+
+  .intro-text::before {
+    content: '// ';
+    color: var(--blog-muted);
+  }
+
+  .posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 3rem 0;
+  }
+
+  .post-entry {
+    background: rgba(224, 224, 224, 0.03);
+    border: 1px solid rgba(224, 224, 224, 0.15);
+    border-left: 3px solid var(--blog-secondary);
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+    font-family: 'Fira Code', monospace;
+  }
+
+  .post-entry:hover {
+    background: rgba(224, 224, 224, 0.06);
+    border-left-color: var(--blog-link);
+    transform: translateX(2px);
+  }
+
+  .post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .post-date {
+    color: var(--blog-muted);
+    font-family: 'Fira Code', monospace;
+  }
+
+  .post-tags {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    background: rgba(187, 134, 252, 0.1);
+    color: var(--blog-link);
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+    border: 1px solid rgba(187, 134, 252, 0.2);
+    text-transform: lowercase;
+  }
+
+  .post-title {
+    margin: 0 0 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 400;
+  }
+
+  .post-title a {
+    color: var(--blog-primary);
+    text-decoration: none;
+    text-transform: lowercase;
+    transition: color 0.2s ease;
+  }
+
+  .post-title a:hover {
+    color: var(--blog-link);
+  }
+
+  .post-excerpt {
+    color: var(--blog-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0.75rem 0 1rem;
+  }
+
+  .post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .read-time {
+    color: var(--blog-muted);
+    font-size: 0.75rem;
+  }
+
+  /* Navigation styling to match blog aesthetic */
+  #blog .nav {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 3rem 0 2rem;
+    font-family: 'Fira Code', monospace;
+  }
+
+  #blog .nav li {
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: 1px solid var(--blog-secondary);
+    border-left: 3px solid var(--blog-secondary);
+    transition: all 0.2s ease;
+    position: relative;
+    text-transform: lowercase;
+    font-size: 0.9rem;
+    color: var(--blog-primary);
+  }
+
+  #blog .nav li:hover {
+    background: rgba(224, 224, 224, 0.05);
+    border-color: var(--blog-link);
+    border-left-color: var(--blog-link);
+    transform: translateX(2px);
+    color: var(--blog-link);
+  }
+
+  #blog .nav li::before {
+    content: '[ ';
+    color: var(--blog-muted);
+  }
+
+  #blog .nav li::after {
+    content: ' ]';
+    color: var(--blog-muted);
+  }
+
+  #blog .nav li:hover::before,
+  #blog .nav li:hover::after {
+    color: var(--blog-link);
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .post-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    #blog .nav {
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .post-entry {
+      padding: 1.2rem;
+    }
+  }
+
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--blog-muted);
+    font-size: 0.9rem;
+  }
+
+  .load-more {
+    text-align: center;
+    margin: 2rem 0;
+  }
+
+  .load-more button {
+    background: transparent;
+    color: var(--blog-secondary);
+    border: 1px solid var(--border);
+    padding: 0.75rem 1.5rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .load-more button:hover {
+    color: var(--blog-link);
+    border-color: var(--blog-link);
+  }
+
+  .load-more button::before {
+    content: '[ ';
+    color: var(--blog-muted);
+  }
+
+  .load-more button::after {
+    content: ' ]';
+    color: var(--blog-muted);
+  }
+
+  .load-more button:hover::before,
+  .load-more button:hover::after {
+    color: var(--blog-link);
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    #blog h2::after {
+      animation: none;
+    }
+
+    .post-entry:hover,
+    #blog .nav li:hover {
+      transform: none;
+    }
+  }
+</style>

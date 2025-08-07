@@ -1,0 +1,20 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "clean-css": "^5.3.0",
+    "html-minifier-terser": "^7.2.0",
+    "js-yaml": "^4.1.0",
+    "marked": "^5.0.0",
+    "terser": "^5.43.1"
+  }
+}
