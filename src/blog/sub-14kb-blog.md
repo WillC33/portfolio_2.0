@@ -1,7 +1,7 @@
 ---
 title: Building a Sub-14KB Blog When Every Byte Counts
 slug: sub-14kb-blog-tcp-packet-optimisation
-date: 2025-01-15
+date: 2025-08-07
 description: Explore the technical constraints and creative solutions behind building a complete blog system where each post must fit within a single TCP packet, including the build-time validation system that enforces this limit.
 lead: How enforcing a 14KB limit per blog post transformed my approach to web performance and content delivery
 tags: [performance, optimisation, tcp, networking]
