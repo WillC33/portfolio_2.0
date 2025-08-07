@@ -242,7 +242,7 @@
 
 <div class="container">
   <nav class="back-nav">
-    <a href="#" onclick="history.back(); return false;">back</a>
+    <a href="#" onclick="returnToBlog(); return false;">back</a>
   </nav>
 
   <header class="article-header">
@@ -264,10 +264,29 @@
   <footer class="article-footer">
     <nav class="footer-nav">
       <a href="/">home</a>
-      <a href="/blog/">blog</a>
-      <a href="/projects/">projects</a>
     </nav>
   </footer>
 </div>
+
+<script>
+  function isBackFromSameDomain() {
+    const referrer = document.referrer;
+    const currentDomain = window.location.hostname;
+
+    if (!referrer) {
+      return false; // No referrer (direct access, bookmark, etc.)
+    }
+
+    const referrerDomain = new URL(referrer).hostname;
+    return referrerDomain === currentDomain;
+  }
+
+  const toHome = () => window.location.href = '/';
+
+  const returnToBlog = () => isBackFromSameDomain()
+    ? history.back()
+    : toHome();
+
+</script>
 
 </html>

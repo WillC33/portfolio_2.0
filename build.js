@@ -114,6 +114,11 @@ async function minifyFile(content) {
 }
 
 /**
+  * Helper to calculate a read time from the content length
+  */
+const getReadTime = wordCount => Math.ceil(wordCount / 220);
+
+/**
   * Builds the blog post files and minifies them
   */
 async function buildBlogPosts() {
@@ -131,6 +136,8 @@ async function buildBlogPosts() {
     const filePath = path.join(blogDir, file);
     const { frontmatter, content } = await parseMarkdown(filePath);
 
+    const wordCount = content.split(/\s+/).length;
+
     const tagsHtml = Array.isArray(frontmatter.tags)
       ? frontmatter.tags.map(tag => `<span class="tag">${escapeHtmlAttribute(tag)}</span>`).join('')
       : '';
@@ -138,8 +145,8 @@ async function buildBlogPosts() {
     let html = template
       .replace(/\{\{title\}\}/g, escapeHtmlAttribute(frontmatter.title || ''))
       .replace(/\{\{description\}\}/g, escapeHtmlAttribute(frontmatter.description || ''))
-      .replace(/\{\{date\}\}/g, escapeHtmlAttribute(frontmatter.date || ''))
-      .replace(/\{\{readTime\}\}/g, escapeHtmlAttribute(frontmatter.readTime || ''))
+      .replace(/\{\{date\}\}/g, escapeHtmlAttribute(frontmatter.date.toLocaleDateString('en-CA') || ''))
+      .replace(/\{\{readTime\}\}/g, escapeHtmlAttribute(getReadTime(wordCount) || ''))
       .replace(/\{\{tags\}\}/g, tagsHtml)
       .replace(/\{\{lead\}\}/g, escapeHtmlAttribute(frontmatter.lead || ''))
       .replace(/\{\{content\}\}/g, content); // Content is already HTML, don't escape
@@ -161,7 +168,7 @@ async function buildBlogPosts() {
       description: frontmatter.description,
       lead: frontmatter.lead,
       tags: frontmatter.tags,
-      readTime: frontmatter.readTime
+      readTime: getReadTime(wordCount)
     });
   }
 

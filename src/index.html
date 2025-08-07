@@ -314,7 +314,7 @@
     font-size: 10px;
     opacity: .4;
     font-family: Custom, monospace;
-    color: var(--secondary)
+    color: #fff;
   }
 
   .nav li:first-child {
@@ -361,14 +361,6 @@
       padding: .6rem .8rem;
       font-size: .8rem
     }
-  }
-
-  * {
-    cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYSURBVDhPY/wPBAwUACYoTTYYNZjuBgMAGn4A/W2dMQAAAABJRU5ErkJggg=='), auto
-  }
-
-  .nav li {
-    cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYSURBVDhPY2RgYPiPBBhRmGyAYjDdDQYAvwQBASW8TJQAAAAASUVORK5CYII='), pointer
   }
 
   /* Blog-specific styles */
@@ -661,19 +653,20 @@
     </div>
   </div>
 </div>
-<div class="performance-stats" id="performance-stats">size: <span id="page-size">0kb</span> | time: <span
-    id="load-time">0ms</span></div>
+<div class="performance-stats" id="performance-stats">cumulative size: <span id="page-size">0kb</span> | last request:
+  <span id="load-time">0ms</span>
+</div>
 <script>
   let pageStart = performance.now(), currentSize = 0;
 
-  function updateStats() {
+  const updateStats = () => {
     const e = Math.round(performance.now() - pageStart), t = Math.round(new Blob([document.documentElement.outerHTML]).size / 1024);
     document.getElementById("page-size").textContent = t + "kb", document.getElementById("load-time").textContent = e + "ms"
   }
 
   let current = "home", prefetchedPages = new Set(["home"]);
 
-  function decodeTitle() {
+  const decodeTitle = () => {
     const e = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()", t = "william cooke";
     let n = t.split("").map(() => e[Math.floor(46 * Math.random())]).join(""), o = 0;
     const d = () => {
@@ -689,7 +682,7 @@
 
   let pLoaded = 0, tLoaded = 0, hLoaded = 0;
 
-  function loadTiny() {
+  const loadTiny = () => {
     if (tLoaded) return;
     const e = document.getElementById("imgContainer");
     if (!e) return;
@@ -701,7 +694,7 @@
     }, 500)
   }
 
-  function loadProfileImage() {
+  const loadProf = () => {
     if (pLoaded) return;
     const e = document.getElementById("imgContainer");
     if (!e) return;
@@ -718,7 +711,7 @@
   let blogTotalChunks = 0;
   let blogLoading = false;
 
-  async function loadBlogChunk(chunkNum) {
+  const loadBlogChunk = async chunkNum => {
     if (blogLoading) return;
     blogLoading = true;
 
@@ -762,7 +755,6 @@
       }
 
     } catch (error) {
-      console.error('Failed to load blog posts:', error);
       const postsList = document.getElementById('blog-posts-list');
       postsList.innerHTML = '<div class="loading">failed to load posts</div>';
     }
@@ -770,7 +762,7 @@
     blogLoading = false;
   }
 
-  function setupInfiniteScroll() {
+  const setupInfiniteScroll = () => {
     const loadMoreButton = document.getElementById('blog-load-more');
     if (!loadMoreButton) return;
 
@@ -787,26 +779,25 @@
     observer.observe(loadMoreButton);
   }
 
-  async function loadNextBlogChunk() {
-    if (blogCurrentChunk < blogTotalChunks) {
-      blogCurrentChunk++;
-      await loadBlogChunk(blogCurrentChunk);
-    }
+  const loadNextBlogChunk = async () => {
+    if (blogCurrentChunk > blogTotalChunks) return;
+    blogCurrentChunk++;
+    await loadBlogChunk(blogCurrentChunk);
   }
 
-  function initBlogPosts() {
+  const initBlogPosts = () => {
     if (blogCurrentChunk === 0) {
       blogCurrentChunk = 1;
       loadBlogChunk(1);
     }
   }
 
-  function nav(e) {
+  const nav = (e) => {
     if (current === e) return;
     if (pageStart = performance.now(), !prefetchedPages.has(e)) return void fetch(`${e}.html`).then(e => e.text()).then(t => {
       document.getElementById("content").insertAdjacentHTML("beforeend", t), prefetchedPages.add(e), nav(e);
       const n = document.getElementById("profile");
-      n && (n.addEventListener("mouseenter", loadTiny), n.querySelector(".img-container") && n.querySelector(".img-container").addEventListener("mouseenter", loadProfileImage))
+      n && (n.addEventListener("mouseenter", loadTiny), n.querySelector(".img-container") && n.querySelector(".img-container").addEventListener("mouseenter", loadProf))
     }).catch(() => {
       console.log(`Loading ${e} page...`)
     });
@@ -819,7 +810,7 @@
     }
   }
 
-  function randomGlitchBurst() {
+  const randomGlitchBurst = () => {
     const e = document.querySelectorAll(".nav li, .bio, h1"), t = e[Math.floor(Math.random() * e.length)];
     t.style.transform = "translate(-2px, 1px)", t.style.filter = "hue-rotate(180deg)", setTimeout(() => {
       t.style.transform = "", t.style.filter = ""
