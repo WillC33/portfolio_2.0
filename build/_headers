@@ -1,0 +1,41 @@
+# Global security headers
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: same-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Root and index - aggressive caching
+/
+  Cache-Control: public, max-age=86400, s-maxage=2592000, immutable
+  Link: </profile.html>; rel=prefetch, </projects.html>; rel=prefetch, </blog.html>; rel=prefetch
+
+/index.html  
+  Cache-Control: public, max-age=86400, s-maxage=2592000, immutable
+  Link: </profile.html>; rel=prefetch, </projects.html>; rel=prefetch, </blog.html>; rel=prefetch
+
+# Blog index - no cache (shows latest posts)
+/blog.html
+  Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+
+# Blog manifests - short cache for updates  
+/blog/manifests/*.json
+  Cache-Control: public, max-age=300, s-maxage=900
+
+# Individual blog posts - long cache (content doesn't change)
+/blog/*/index.html
+  Cache-Control: public, max-age=86400, s-maxage=2592000
+
+# Images - cache forever with versioning
+/*.jpg
+  Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable
+  Accept-CH: DPR, Width, Viewport-Width
+
+/*.ico
+  Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable
+
+# Service worker - no cache
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate, max-age=0

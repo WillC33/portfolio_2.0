@@ -5,9 +5,10 @@ import CleanCSS from 'clean-css';
 import { minify } from 'html-minifier-terser';
 import { minify as terserMinify } from 'terser';
 import yaml from 'js-yaml';
+import { brotliCompressSync, constants } from 'zlib';
 
 /**
- * Potfolio build script options region
+ * Portfolio build script with aggressive optimizations
  */
 
 marked.setOptions({ mangle: false, headerIds: false });
@@ -32,26 +33,40 @@ const HTML_OPTS = {
   removeOptionalTags: true,
   removeAttributeQuotes: false,
   sortAttributes: true,
-  sortClassName: true
+  sortClassName: true,
+  minifyURLs: true,
+  continueOnParseError: true,
+  quoteCharacter: '"',
+  preventAttributesEscaping: true
 };
 
 const TERSER_OPTS = {
   mangle: true,
-  compress: { dead_code: true, drop_console: true, drop_debugger: true, passes: 2 },
+  compress: {
+    dead_code: true,
+    drop_console: true,
+    drop_debugger: true,
+    passes: 2,
+    pure_funcs: ['console.log'],
+    unsafe: true,
+    unsafe_comps: true,
+    unsafe_math: true,
+    unsafe_methods: true,
+    unsafe_proto: true,
+    unsafe_regexp: true
+  },
   format: { comments: false }
 };
 
 const log = (msg) => console.log(`➡️ ${msg}`);
 const ok = (msg) => console.log(`✅ ${msg}`);
 
-/*
- * Helper function to escape HTML attributes so all data are parsable strings
+/**
+ * Escape HTML attributes
  */
 function escapeHtmlAttribute(value) {
   if (value === null || value === undefined) return '';
-
   const text = String(value);
-
   return text
     .replace(/&/g, '&amp;')
     .replace(/"/g, '&quot;')
@@ -61,10 +76,8 @@ function escapeHtmlAttribute(value) {
 }
 
 /**
-  * Parses the markdown of the blog files for adding them into the template
-  * This throws many errors as we don't need to fail gracefully, if the fn
-  * is broken, the script should not create a template
-  */
+ * Parse markdown files with frontmatter
+ */
 async function parseMarkdown(filePath) {
   const content = await fs.readFile(filePath, 'utf8');
   const match = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
@@ -88,13 +101,15 @@ async function parseMarkdown(filePath) {
 }
 
 /**
-  * Minifies an html doc, as well as it's internal CSS and JS components
-  */
+ * Minify HTML with inline CSS and JS
+ */
 async function minifyFile(content) {
+  // Minify inline CSS
   content = content.replace(/<style>([\s\S]*?)<\/style>/g, (match, css) => {
     return `<style>${cssMinifier.minify(css).styles}</style>`;
   });
 
+  // Minify inline JavaScript
   const scriptMatches = [...content.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)];
   for (const match of scriptMatches) {
     const [fullMatch, jsCode] = match;
@@ -114,13 +129,13 @@ async function minifyFile(content) {
 }
 
 /**
-  * Helper to calculate a read time from the content length
-  */
+ * Calculate read time
+ */
 const getReadTime = wordCount => Math.ceil(wordCount / 220);
 
 /**
-  * Builds the blog post files and minifies them
-  */
+ * Build blog posts
+ */
 async function buildBlogPosts() {
   log('Processing blog posts...');
 
@@ -149,7 +164,7 @@ async function buildBlogPosts() {
       .replace(/\{\{readTime\}\}/g, escapeHtmlAttribute(getReadTime(wordCount) || ''))
       .replace(/\{\{tags\}\}/g, tagsHtml)
       .replace(/\{\{lead\}\}/g, escapeHtmlAttribute(frontmatter.lead || ''))
-      .replace(/\{\{content\}\}/g, content); // Content is already HTML, don't escape
+      .replace(/\{\{content\}\}/g, content);
 
     html = await minifyFile(html);
 
@@ -176,8 +191,8 @@ async function buildBlogPosts() {
 }
 
 /**
-  * Builds the blog manifest json for maintaining the index
-  */
+ * Build blog manifests
+ */
 async function buildManifests(posts) {
   log('Building chunked manifests...');
 
@@ -216,14 +231,15 @@ async function buildManifests(posts) {
 }
 
 /**
-  * Copies the relevant assets to the build folder
-  */
+ * Copy and minify files
+ */
 async function copyFiles() {
   log('Copying and minifying files...');
 
   const htmlFiles = ['index.html', 'profile.html', 'projects.html', 'blog.html'];
   const assetFiles = ['tiny.jpg', 'normal.jpg', 'favicon.ico'];
 
+  // Copy HTML files
   for (const file of htmlFiles) {
     const srcPath = path.join(srcDir, file);
     const destPath = path.join(buildDir, file);
@@ -240,6 +256,7 @@ async function copyFiles() {
     }
   }
 
+  // Copy asset files
   for (const file of assetFiles) {
     try {
       await fs.copyFile(path.join(srcDir, file), path.join(buildDir, file));
@@ -248,22 +265,139 @@ async function copyFiles() {
       console.log(`⚠️  Skipped ${file}`);
     }
   }
+
+  // Copy _headers file if it exists
+  try {
+    await fs.copyFile(path.join(srcDir, '_headers'), path.join(buildDir, '_headers'));
+    ok('_headers');
+  } catch (error) {
+    console.log('⚠️  No _headers file found');
+  }
+
+  // Copy service worker if it exists
+  try {
+    const swContent = await fs.readFile(path.join(srcDir, 'sw.js'), 'utf8');
+    const minifiedSw = (await terserMinify(swContent, TERSER_OPTS)).code;
+    await fs.writeFile(path.join(buildDir, 'sw.js'), minifiedSw);
+    ok('sw.js');
+  } catch (error) {
+    console.log('⚠️  No service worker found');
+  }
 }
 
 /**
-  * Runs the build process
-  */
-async function build() {
-  console.log('Building portfolio...\n');
+ * Precompress all HTML files with Brotli
+ */
+async function precompressAssets() {
+  log('Pre-compressing assets with Brotli...');
 
+  async function compressRecursive(dir) {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+
+      if (entry.isDirectory()) {
+        await compressRecursive(fullPath);
+      } else if (entry.name.endsWith('.html') || entry.name.endsWith('.json')) {
+        const content = await fs.readFile(fullPath);
+
+        // Maximum compression level 11
+        const compressed = brotliCompressSync(content, {
+          params: {
+            [constants.BROTLI_PARAM_QUALITY]: 11,
+            [constants.BROTLI_PARAM_LGWIN]: 24,
+            [constants.BROTLI_PARAM_MODE]: constants.BROTLI_MODE_TEXT
+          }
+        });
+
+        await fs.writeFile(`${fullPath}.br`, compressed);
+
+        const originalSize = content.length;
+        const compressedSize = compressed.length;
+        const ratio = ((1 - compressedSize / originalSize) * 100).toFixed(1);
+
+        const relPath = path.relative(buildDir, fullPath);
+        ok(`Compressed ${relPath}: ${ratio}% reduction (${(compressedSize / 1024).toFixed(1)}KB)`);
+      }
+    }
+  }
+
+  await compressRecursive(buildDir);
+}
+
+/**
+ * Generate optimized headers file for Cloudflare Pages
+ */
+async function generateHeaders() {
+  log('Generating optimized headers...');
+
+  const headers = `# Global security headers
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: same-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Root and index - aggressive caching
+/
+  Cache-Control: public, max-age=86400, s-maxage=2592000, immutable
+  Link: </profile.html>; rel=prefetch, </projects.html>; rel=prefetch, </blog.html>; rel=prefetch
+
+/index.html  
+  Cache-Control: public, max-age=86400, s-maxage=2592000, immutable
+  Link: </profile.html>; rel=prefetch, </projects.html>; rel=prefetch, </blog.html>; rel=prefetch
+
+# Blog index - no cache (shows latest posts)
+/blog.html
+  Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+
+# Blog manifests - short cache for updates  
+/blog/manifests/*.json
+  Cache-Control: public, max-age=300, s-maxage=900
+
+# Individual blog posts - long cache (content doesn't change)
+/blog/*/index.html
+  Cache-Control: public, max-age=86400, s-maxage=2592000
+
+# Images - cache forever with versioning
+/*.jpg
+  Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable
+  Accept-CH: DPR, Width, Viewport-Width
+
+/*.ico
+  Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable
+
+# Service worker - no cache
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate, max-age=0`;
+
+  await fs.writeFile(path.join(buildDir, '_headers'), headers);
+  ok('Generated optimized _headers with s-maxage directives');
+}
+/**
+ * Main build process
+ */
+async function build() {
+  console.log('🚀 Building optimized portfolio...\n');
+
+  // Clean and create build directory
   await fs.rm(buildDir, { recursive: true, force: true });
   await fs.mkdir(buildDir, { recursive: true });
 
+  // Build steps
   const posts = await buildBlogPosts();
   await buildManifests(posts);
   await copyFiles();
+  await precompressAssets();
+  await generateHeaders();
 
-  console.log(`Build complete! Generated ${posts.length} posts`);
+  console.log(`\n✨ Build complete! Generated ${posts.length} posts`);
+  console.log('📦 Files are pre-compressed with Brotli for maximum speed');
+  console.log('🚀 Deploy with: wrangler pages deploy');
 }
 
+// Run build
 build().catch(console.error);

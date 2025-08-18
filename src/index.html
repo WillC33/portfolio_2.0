@@ -2,6 +2,7 @@
 <html lang="en">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="William Cooke Dev Portfolio: One of the fastest sites on Earth">
 <title>William Cooke - Full Stack Developer</title>
 <style>
   :root {
@@ -667,18 +668,41 @@
   let current = "home", prefetchedPages = new Set(["home"]);
 
   const decodeTitle = () => {
-    const e = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()", t = "william cooke";
-    let n = t.split("").map(() => e[Math.floor(46 * Math.random())]).join(""), o = 0;
+    const e = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+    const t = "william cooke";
+    const h1 = document.querySelector("h1");
+
+    // Start with scrambled text
+    let n = t.split("").map(() => e[Math.floor(46 * Math.random())]).join("");
+    h1.textContent = n;
+
+    let o = 0;
+
+    // Scramble phase - reduced from 200ms to 50ms intervals
     const d = () => {
       if (o < 3) {
         const a = o % 2 == 0 ? e : "█▓▒░▄▀■□▪";
-        n = t.split("").map(() => a[Math.floor(Math.random() * a.length)]).join(""), document.querySelector("h1").textContent = n, o++, setTimeout(d, 200)
-      } else setTimeout(() => a(), 300)
-    }, a = (e = 0) => {
-      e >= 13 || (n = n.substring(0, e) + t[e] + n.substring(e + 1), document.querySelector("h1").textContent = n, setTimeout(() => a(e + 1), 80 + 40 * Math.random()))
+        n = t.split("").map(() => a[Math.floor(Math.random() * a.length)]).join("");
+        h1.textContent = n;
+        o++;
+        setTimeout(d, 50); // Was 200ms
+      } else {
+        setTimeout(() => a(), 100); // Was 300ms
+      }
     };
-    document.querySelector("h1").textContent = n, setTimeout(d, 400)
-  }
+
+    // Decode phase - reduced from 80-120ms to 30-50ms per character
+    const a = (e = 0) => {
+      if (e < 13) {
+        n = n.substring(0, e) + t[e] + n.substring(e + 1);
+        h1.textContent = n;
+        setTimeout(() => a(e + 1), 30 + 20 * Math.random()); // Was 80 + 40
+      }
+    };
+
+    // Start immediately instead of 400ms delay
+    setTimeout(d, 100); // Was 400ms
+  };
 
   let pLoaded = 0, tLoaded = 0, hLoaded = 0;
 
