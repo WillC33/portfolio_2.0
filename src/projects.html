@@ -5,131 +5,85 @@
   <h2>projects</h2>
   <div class="grid">
     <div class="card">
-      <h3>Clamber</h3>
+      <h3>Pangea</h3>
       <div class="pills"><span class="pill">Elixir</span><span class="pill">Phoenix</span><span
-          class="pill">LiveView</span><span class="pill">PostgreSQL</span></div>
-      <p>Witlist management platform engineered for developer efficiency:</p>
+          class="pill">LiveView</span><span class="pill">Docker</span></div>
+      <p>Fault-tolerant distributed monitoring platform with BEAM clustering and real-time dashboards:</p>
       <ul>
-        <li>Domain-bound API keys with cryptographic validation</li>
-        <li>ETS-based caching system reducing database queries significantly</li>
-        <li>Comprehensive security tracking with OAuth audit trails</li>
-        <li>Stripe integration with automated subscription lifecycle management</li>
-        <li>GitHub OAuth login</li>
+        <li>Distributed worker coordination with Erlang clustering</li>
+        <li>Real-time monitoring dashboards with Phoenix LiveView</li>
+        <li>HTTP, ping, DNS, and TLS monitoring capabilities</li>
+        <li>Docker deployment with comprehensive documentation</li>
       </ul>
-      <a href="https://clamber.digital" class="btn">view_project</a>
+      <a href="https://github.com/WillC33/pangea" class="btn">view_project</a>
     </div>
 
     <div class="card">
-      <h3>ambrosia</h3>
-      <div class="pills"><span class="pill">Elixir</span><span class="pill">Gemini</span></div>
-      <p>Ambrosia is a web server for Gemini protocol websites</p>
+      <h3>Ambrosia</h3>
+      <div class="pills"><span class="pill">Elixir</span><span class="pill">Gemini</span><span class="pill">TLS</span>
+      </div>
+      <p>Production-ready Gemini server with TLS, concurrent handling, and comprehensive security testing:</p>
       <ul>
-        <li>Secure file serving with MIME type checking and file path safety</li>
-        <li>Traffic analysis and logging capabilities</li>
-        <li>ETS based rate limiting</li>
+        <li>Fault-tolerant architecture using BEAM supervision trees</li>
+        <li>Secure file serving with path traversal protection</li>
+        <li>ETS-based rate limiting with token bucket algorithm</li>
+        <li>Docker deployment with automatic certificate generation</li>
       </ul>
-      <a href="https://codeberg.org/WillC33/Ambrosia" class="btn">view_project</a>
+      <a href="https://codeberg.org/WillC33/ambrosia" class="btn">view_project</a>
     </div>
 
     <div class="card">
-      <h3>madrina</h3>
-      <div class="pills"><span class="pill">OCaml</span><span class="pill">Gemini</span></div>
-      <p>A lightweight Gemini client for the terminal</p>
-      <ul>
-        <li>Opinionated, easy-to-read interface</li>
-        <li>Vim motions for navigation</li>
-      </ul>
-      <a href="https://codeberg.org/WillC33/Madrina" class="btn">view_project</a>
-    </div>
-
-    <div class="card">
-      <h3>Solera Analytics</h3>
-      <div class="pills"><span class="pill">Svelte</span><span class="pill">Chart.js</span><span
-          class="pill">TailwindCSS</span></div>
-      <p>Professional ageing system simulation for sherry/spirits/vinegar production featuring:</p>
-      <ul>
-        <li>Real-time revenue optimisation modelling</li>
-        <li>Interactive pricing sensitivity analysis</li>
-        <li>Advanced flow dynamics visualisation</li>
-      </ul>
-      <a href="https://willc33.github.io/solera-analytics/" class="btn">view_project</a>
-    </div>
-
-    <div class="card">
-      <h3>NEX VCS</h3>
-      <div class="pills"><span class="pill">F#</span><span class="pill">.NET</span><span class="pill">OCaml</span><span
-          class="pill">CLI</span></div>
-      <p>Next-generation version control system engineered for performance and simplicity:</p>
-      <ul>
-        <li>Custom diff engine with Myers algorithm implementation</li>
-        <li>Functional-first CLI with pattern matching on commands</li>
-        <li>Internationalisation support with localised CLI</li>
-      </ul>
-      <a href="https://github.com/WillC33/nex-vcs" class="btn">view_project</a>
-    </div>
-
-    <div class="card">
-      <h3>Ether Network Monitor</h3>
+      <h3>Ether</h3>
       <div class="pills"><span class="pill">OCaml</span><span class="pill">C</span><span class="pill">Raw Sockets</span>
       </div>
-      <p>Low-level network packet analyser for Ethernet frame inspection:</p>
+      <p>Raw packet sniffer for understanding network protocols at the packet level:</p>
       <ul>
-        <li>Cross-platform raw socket implementation</li>
-        <li>Real-time packet parsing and visualisation</li>
-        <li>Support for IPv4, IPv6, ARP, and custom protocols</li>
+        <li>Cross-platform raw socket implementation with C bindings</li>
+        <li>Real-time Ethernet frame parsing and analysis</li>
+        <li>Support for IPv4, IPv6, ARP protocol inspection</li>
+        <li>Educational tool for learning network stack fundamentals</li>
       </ul>
       <a href="https://github.com/WillC33/ether" class="btn">view_project</a>
     </div>
 
     <div class="card">
-      <h3>Seasonly.org</h3>
-      <div class="pills"><span class="pill">Phoenix</span><span class="pill">Elixir</span><span
+      <h3>traceinertia</h3>
+      <div class="pills"><span class="pill">JavaScript</span><span class="pill">Web Audio API</span><span
+          class="pill">Creative Coding</span></div>
+      <p>Interactive hypertext platform exploring language, memory, and digital decay:</p>
+      <ul>
+        <li>traceinertia is a code-as-art project that explores broken interfaces</li>
+        <li>handles interactive and replayable experiences via vanilla JS</li>
+      </ul>
+      <a href="https://traceinertia.net" class="btn">view_project</a>
+    </div>
+
+    <div class="card">
+      <h3>Seasonly</h3>
+      <div class="pills"><span class="pill">Phoenix</span><span class="pill">LiveView</span><span
           class="pill">PostgreSQL</span></div>
-      <p>Sustainable food discovery platform connecting consumers with seasonal produce:</p>
+      <p>Phoenix LiveView community platform (live production app):</p>
       <ul>
         <li>Location-aware seasonal food recommendations</li>
-        <li>Integration of live-view with JS tooling for advanced UX</li>
-        <li>Modern performant stack to support business logic</li>
+        <li>Real-time user interactions with LiveView</li>
+        <li>Production deployment with database persistence</li>
+        <li>Modern responsive design for mobile and desktop</li>
       </ul>
       <a href="https://seasonly.org" class="btn">view_project</a>
     </div>
 
     <div class="card">
-      <h3>WriterUI</h3>
-      <div class="pills"><span class="pill">F#</span><span class="pill">NuGet</span></div>
-      <p>Functional console UI library for .NET applications:</p>
-      <ul>
-        <li>Type-safe input handling with automatic validation</li>
-        <li>Pipeline-friendly API design for F# workflows</li>
-        <li>Published open-source package on NuGet.org</li>
-      </ul>
-      <a href="https://www.nuget.org/packages/WriterUI" class="btn">view_project</a>
-    </div>
-
-    <div class="card">
-      <h3>EcoDoc Pipeline</h3>
-      <div class="pills"><span class="pill">F#</span><span class="pill">Text Processing</span><span
+      <h3>ReWined</h3>
+      <div class="pills"><span class="pill">SvelteKit</span><span class="pill">Static Site</span><span
           class="pill">i18n</span></div>
-      <p>Intelligent document processing pipeline for multilingual text analysis:</p>
+      <p>SvelteKit static site with localisation and performance optimisation:</p>
       <ul>
-        <li>French culture-aware tokenisation and normalisation</li>
-        <li>Automated symbol removal whilst preserving UTF-8 accents</li>
-        <li>CSV export pipeline with deduplication and sorting capabilities</li>
+        <li>Pre-rendered static site generation for fast loading</li>
+        <li>Internationalisation support for multiple languages</li>
+        <li>SEO-optimised with semantic HTML structure</li>
+        <li>Performance-focused build pipeline</li>
       </ul>
-      <a href="https://github.com/WillC33/Ecodoc_dataPipeline" class="btn">view_project</a>
-    </div>
-
-    <div class="card">
-      <h3>Softserve</h3>
-      <div class="pills"><span class="pill">OCaml</span><span class="pill">Lwt</span><span class="pill">Cohttp</span>
-      </div>
-      <p>Lightweight HTTP development server with intelligent routing:</p>
-      <ul>
-        <li>Asynchronous I/O with Lwt for high-concurrency handling</li>
-        <li>Smart path resolution with automatic index.html fallback</li>
-        <li>Environment-aware port configuration for flexible deployment</li>
-      </ul>
-      <a href="https://github.com/WillC33/softserve" class="btn">view_project</a>
+      <a href="https://rewined.net" class="btn">view_project</a>
     </div>
   </div>
   <nav class="nav" role="navigation">

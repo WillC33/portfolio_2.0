@@ -173,7 +173,7 @@ async function buildBlogPosts() {
     await fs.writeFile(path.join(postDir, 'index.html'), html);
 
     const sizeKB = (Buffer.byteLength(html, 'utf8') / 1024).toFixed(1);
-    if (sizeKB > 14) throw new Error(`The post ${frontmatter.title} cannot be contained in an initial TCP call. Reduce it in size.`)
+    if (sizeKB > 14) throw new Error(`The post ${frontmatter.title} cannot be contained in an initial TCP call. Reduce it in size. Current: ${sizeKB}`)
     ok(`blog/${frontmatter.slug}/ (${sizeKB}KB)`);
 
     posts.push({

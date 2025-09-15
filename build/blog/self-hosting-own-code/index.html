@@ -1,0 +1,108 @@
+<!doctype html><html lang="en"><meta charset="UTF-8"><meta content="width=device-width,initial-scale=1" name="viewport"><meta content="Creating an alternative to the noisy, copilot-filled experience of Microsoft&#39;s GitHub for your projects." name="description"><meta content="William Cooke" name="author"><meta content="Truly Own Your Code with Self Hosting - William Cooke" property="og:title"><meta content="Creating an alternative to the noisy, copilot-filled experience of Microsoft&#39;s GitHub for your projects." property="og:description"><meta content="article" property="og:type"><title>Truly Own Your Code with Self Hosting - William Cooke</title><style>:root{--bg:#121212;--fg:#e0e0e0;--secondary:#a0a0a0;--accent:#bb86fc;--muted:#707070;--code-bg:#1a1a1a;--border:rgba(224, 224, 224, 0.15)}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Fira Code','JetBrains Mono','SF Mono',monospace;background:var(--bg);color:var(--fg);line-height:1.6;min-height:100vh}.container{max-width:700px;margin:0 auto;padding:2rem}.back-nav{margin-bottom:2rem}.back-nav a{color:var(--secondary);text-decoration:none;font-size:.9rem;transition:color .2s}.back-nav a:hover{color:var(--accent)}.back-nav a::before{content:'← '}.article-header{margin-bottom:3rem;border-bottom:1px solid var(--border);padding-bottom:2rem}.article-meta{display:flex;gap:1rem;align-items:center;font-size:.8rem;color:var(--muted);margin-bottom:1rem}.tag{background:rgba(187,134,252,.1);color:var(--accent);padding:.2rem .5rem;border:1px solid rgba(187,134,252,.2);font-size:.7rem}h1{font-size:clamp(1.8rem, 5vw, 2.5rem);font-weight:400;text-transform:lowercase;margin-bottom:1rem;position:relative}h1::after{content:'_';animation:1.5s infinite cursor;color:var(--accent)}@keyframes cursor{0%,50%{opacity:1}100%,51%{opacity:0}}.lead{font-size:1.1rem;color:var(--secondary);margin-bottom:1.5rem;font-style:italic}.article-content h2{font-size:1.4rem;margin:2rem 0 1rem;color:var(--fg);text-transform:lowercase}.article-content h3{font-size:1.2rem;margin:1.5rem 0 .75rem;color:var(--secondary)}.article-content p{margin-bottom:1.5rem;color:var(--fg)}.article-content ol,.article-content ul{margin:1rem 0 1.5rem 1.5rem}.article-content li{margin-bottom:.5rem}.article-content blockquote{border-left:3px solid var(--accent);padding-left:1rem;margin:1.5rem 0;color:var(--secondary);font-style:italic}.article-content code{background:var(--code-bg);padding:.2rem .4rem;border:1px solid var(--border);font-size:.9rem;color:var(--accent)}.article-content pre{background:var(--code-bg);border:1px solid var(--border);border-left:3px solid var(--accent);padding:1rem;margin:1.5rem 0;overflow-x:auto;font-size:.85rem}.article-content pre code{background:0 0;border:none;padding:0;color:var(--fg)}.article-footer{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);text-align:center}.footer-nav{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}.footer-nav a{color:var(--secondary);text-decoration:none;padding:.5rem 1rem;border:1px solid var(--border);transition:.2s}.footer-nav a:hover{color:var(--accent);border-color:var(--accent)}.footer-nav a::before{content:'[ ';color:var(--muted)}.footer-nav a::after{content:' ]';color:var(--muted)}.footer-nav a:hover::after,.footer-nav a:hover::before{color:var(--accent)}@media (max-width:480px){.container{padding:1rem}.article-meta{flex-direction:column;align-items:flex-start;gap:.5rem}.footer-nav{flex-direction:column}}@media (prefers-reduced-motion:reduce){h1::after{animation:none}}</style><div class="container"><nav class="back-nav"><a href="#" onclick="returnToBlog(); return false;">back</a></nav><header class="article-header"><div class="article-meta"><span class="date">2025-08-17</span> <span class="read-time">7 min read</span><div class="tags"><span class="tag">self-hosting</span><span class="tag">git</span><span class="tag">dev-tooling</span></div></div><h1>Truly Own Your Code with Self Hosting</h1><p class="lead">GitHub has been living on inertia for years, as the default choice. But the community good will might well run out.</header><article class="article-content"><p>With Microsoft folding GitHub into the CoreAI team, the risk is feeling real to me. GitHub hasn&#39;t seen meaningful updates outside the Copilot brand in a long time. Now its operational sovereignty is gone, handed to a team whose mission is cramming AI into every corner of the developer experience.<p><strong>Let me be clear:</strong> I&#39;m not anti-AI. These are powerful technologies. I&#39;m not naive. I know fully hand-written software&#39;s days are numbered, and shifting towards &#39;product thinking&#39; isn&#39;t all bad. What I&#39;m against is the relentless Copilot enshittification Microsoft has committed to. While, I use Windows at work unwillingly, I am not dogmatically anti MS. I actually like .NET (F# &lt;3), Playwright has its moments, PowerAutomate is awesome. I don&#39;t need ads on my desktop or Copilot pop-ups marring every interaction.<p>So I wanted an alternative: <strong>my own Git server for MUCH less than a pizza a month.</strong><p>This guide sets up Soft Serve, a gorgeous self-hostable Git server with a TUI that feels fresh and developer-y. It runs happily on 512MB RAM, and keeps your valuable time away from Copilot &#39;assistants&#39;.<p>What you&#39;re getting:<ul><li>A VPS/Raspberry Pi/old laptop transformed into a private Git server<li>Optional GitHub mirroring (hedge your bets)<li>Shell functions that make it as smooth as <code>gh repo create</code><li>Data control</ul><h2>The Setup</h2><p>There are a few great options for git serving, like Gitea and Forgejo but I am a terminal man through and through.<p>We&#39;re using <a href="https://github.com/charmbracelet/soft-serve">Soft Serve</a> - a self-hostable Git server with a beautiful TUI. Mine is currently running on 512MB of memory and handles my Git operations brilliantly. If you&#39;re planning for multiple users or massive repos, scale up accordingly. You can audit your current storage needs via the GitHub CLI:<pre><code class="language-bash"># Check your repo sizes
+gh repo list --json name,diskUsage --limit 100 | jq &#39;.[] | &quot;\(.name): \(.diskUsage)KB&quot;&#39;
+# Or without jq:
+# gh repo list --json name,diskUsage --limit 100
+</code></pre><h2>Step 1: Basic SSH Setup</h2><blockquote><p><strong>Security Scope:</strong> This is how not to get instapwned <strong>You DON&#39;T get:</strong> fail2ban, SELinux, IDS, encrypted swap, etc.<br><strong>Your responsibility:</strong> Learn proper VPS hardening before going live, or accept the risk</blockquote><p>I once left a VPS running SSH on port 22 for a day. The logs were terrible. Thousands of bot attempts. Running as root on port 22 is stupid.<h3>Create a non-root user</h3><pre><code class="language-bash"># As root
+adduser gituser
+usermod -aG sudo gituser
+</code></pre><h3>Copy SSH keys and test access</h3><pre><code class="language-bash">mkdir /home/gituser/.ssh
+cp ~/.ssh/authorized_keys /home/gituser/.ssh/
+chown -R gituser:gituser /home/gituser/.ssh
+chmod 700 /home/gituser/.ssh
+chmod 600 /home/gituser/.ssh/authorized_keys
+</code></pre><p>Test from your local machine:<pre><code class="language-bash">ssh gituser@your-vps-ip
+</code></pre><h3>Harden SSH configuration</h3><p>Edit <code>/etc/ssh/sshd_config</code>:<pre><code>Port 2222  # Pick something better than this for your own use
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+</code></pre><p><strong>Restart SSH and test the new port before closing your current session!</strong> Once you can log in securely we can move forward a bit.<h2>Step 2: Install Docker</h2><p>We&#39;re using Docker to keep things clean and portable. I&#39;m specifically showing Docker as it&#39;s the standard. You can also use Podman if you prefer your containers to be a bit more secure.<pre><code class="language-bash"># Install Docker via the official convenience script
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Add your user to the docker group
+sudo usermod -aG docker gituser
+
+# Log out and back in for group change to take effect
+exit
+ssh -p 2222 gituser@your-vps-ip
+
+# Verify installation (should show v2.x.x or higher)
+docker --version
+docker compose version
+</code></pre><p>Note: We&#39;re using Docker Compose v2 (with a space: <code>docker compose</code>), not the old hyphenated version.<h2>Step 3: Configure Firewall</h2><p>Lock down everything except what we need:<pre><code class="language-bash">sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 2222/tcp comment &quot;SSH&quot;
+sudo ufw allow 23231/tcp comment &quot;Soft Serve Git&quot;
+sudo ufw --force enable
+</code></pre><h2>Step 4: Deploy Soft Serve</h2><p>Create <code>~/docker-compose.yml</code>:<pre><code class="language-yaml">version: &quot;3.8&quot;
+services:
+  soft-serve:
+    image: charmcli/soft-serve:latest
+    container_name: soft-serve
+    volumes:
+      - ./soft-serve-data:/soft-serve  # Data persists here between updates
+    ports:
+      - &quot;23231:23231&quot;
+    environment:
+      SOFT_SERVE_INITIAL_ADMIN_KEYS: |
+        ssh-ed25519 AAAAC3... # &lt;- REPLACE WITH YOUR ACTUAL SSH PUBLIC KEY
+    restart: unless-stopped
+</code></pre><p>If you want this to be a multiuser setup (or even multi machine) add some more of your public keys. Soft Serve has some awesome features for managing team workflows and you can find them in their docs.<p>Start it up:<pre><code class="language-bash">docker compose up -d
+docker ps  # Verify it&#39;s running
+</code></pre><h3>Updating Soft Serve</h3><p>When new versions are released, updating with docker compose<h2>Step 5: Set Up Convenient Access</h2><p>Add to <code>~/.ssh/config</code> on your local machine:<pre><code>Host git.myserver
+    HostName your-vps-ip
+    Port 23231
+
+Host myserver
+    HostName your-vps-ip
+    Port 2222
+    User gituser
+</code></pre><p>Now you can:<ul><li><code>ssh myserver</code> - manage your VPS<li><code>ssh git.myserver</code> - access Soft Serve TUI<li><code>git clone ssh://git.myserver/repo-name</code> - clone repos</ul><h2>Step 6: The GitHub Mirror Trick</h2><p>Here&#39;s something that I found useful. It&#39;s annoying to push to a lot of places, my push command is used so frequently it&#39;s aliased as &#39;p&#39; . You can push to both GitHub and your private server simultaneously though:<pre><code class="language-bash"># Add your private server as a remote
+git remote add private ssh://git.myserver/my-repo
+
+# Add it as a second push URL to origin
+git remote set-url --add origin ssh://git.myserver/my-repo
+</code></pre><p>Now <code>git push</code> updates both GitHub and your private server. Perfect redundancy. You might even begin exploring other providers, like the amazing Codeberg project, as a new home for your projects!<p>This is also a good time to mention that either creating a cronjob (if you are confident in your VPS), or enabling your provider&#39;s backups is ESSENTIAL. <strong>Please create a backup or mirroring solution</strong><h2>Step 7: Quick Repo Setup Function</h2><p>Add this to your shell config for instant repo creation, in the style of &#39;gh repo create&#39;: <em>N.B. This is what I use for my own repos where I don&#39;t handle anything much beyond master or main.</em><h3>For Bash/Zsh:</h3><pre><code class="language-bash">gitserver() {
+  if [ &quot;$1&quot; = &quot;repo&quot; ] &amp;&amp; [ &quot;$2&quot; = &quot;add&quot; ]; then
+    local repo_name=&quot;${3:-$(basename $PWD)}&quot;
+    
+    # Verify git repo
+    git rev-parse --git-dir &gt;/dev/null 2&gt;&amp;1 || {
+      echo &quot;Error: Not a git repository&quot;
+      return 1
+    }
+    
+    # Check if remote exists
+    if git remote get-url private &gt;/dev/null 2&gt;&amp;1; then
+      echo &quot;Error: &#39;private&#39; remote already exists&quot;
+      return 1
+    fi
+    
+    git remote add private ssh://git.myserver/$repo_name
+    git remote set-url --add origin ssh://git.myserver/$repo_name
+    
+    # Push with better error handling
+    if git push private main 2&gt;/dev/null; then
+      echo &quot;✓ Pushed main branch&quot;
+    elif git push private master 2&gt;/dev/null; then
+      echo &quot;✓ Pushed master branch&quot;
+    else
+      echo &quot;Note: Push manually with: git push private &lt;branch&gt;&quot;
+    fi
+  fi
+}
+</code></pre><h2>Surviving on 512MB RAM</h2><p>If you&#39;re on a minimal VPS, add some swap, note that your VPS provider might be able to read this. If you are all about privacy, skip or encrypt:<pre><code class="language-bash">sudo fallocate -l 1G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo &#39;/swapfile none swap sw 0 0&#39; | sudo tee -a /etc/fstab
+</code></pre><p>You might also find there is stuff you don&#39;t want running from your default image:<h3>Disable unnecessary services:</h3><pre><code class="language-bash"># Multipath daemon (useless on VPS)
+sudo systemctl disable --now multipathd
+
+# Snapd if you don&#39;t use snaps
+sudo systemctl disable --now snapd
+</code></pre><h3>Monitor your server:</h3><pre><code class="language-bash"># Check resource usage
+docker stats
+free -h
+df -h
+</code></pre><h2>The Result</h2><p>You now have:<ul><li>A private Git server you fully control<li>SSH access locked down properly<li>Clean command-line workflow</ul><p>Your code, your rules, your infrastructure. No tracking, no AI training on your repos, no corporate terms of service. Just Git, exactly how it was meant to be. *Note: This workflow is perfect for personal use. For team deployments, get introduced to the Soft Serve docs.<h2>TODO</h2><ul><li>Find a guide on what you need for proper production hardening of the VPS if you don&#39;t know (fail2ban, encryption, updates etc. the usual suspects)<li>Push repos!</ul><hr><p>That&#39;s it. A proper Git server for the price of a portion of chips. As GitHub drifts into Copilot-shaped irrelevance, you&#39;ve taken back control of your code.</article><footer class="article-footer"><nav class="footer-nav"><a href="/">home</a></nav></footer></div><script>function isBackFromSameDomain(){const o=document.referrer,n=window.location.hostname;return!!o&&new URL(o).hostname===n}const toHome=()=>window.location.href="/",returnToBlog=()=>isBackFromSameDomain()?history.back():toHome();</script>
