@@ -1,0 +1,22 @@
+---
+title: Dump Everything in one TCP Window and Never Worry Again
+slug: dump-into-tcp
+date: 2025-01-09
+description: Let the network do all the heavy lifting and you never have to think about performance ever again
+lead: "Put everything in the first TCP packet (14KB) and the network handles the rest. No performance anxiety. No compromise."
+tags: [performance, optimisation, tcp, networking]
+---
+
+Does anyone remember "Create React App?" Has anyone seen a bundle in the wild that shipped with all the symbols and the source map? I have, and I cut 70% of the built size of it within a month of becoming a dev because I read the docs. This is in no way a boast or something I consider to be a feat of brilliance, though every HR person who crosses my CV will get to read it that way for as long as my employer is listed there. I consider it to be a bare minimum of effort into reading how something works. That's a lost art. We as developers are a psychologically interesting bunch, whining about people taking shortcuts and being sloppy while also trying to find the most automated way to do any task that crosses the kanban. I'd say even, that it is normal and healthy to live in such paradoxes. But it does mean sometimes we do ugly, stupid, rushed shit to meet a deadline or because we get distracted by Twitch? 
+
+Indeed! and I, too, am named in the deposition, don't worry. If Claude can write me a script for it, even through three or four prompts. I ain't reading the damn man page, it's 2025, someone other than my brain can pay the compute. There are no accusations here about your 300Mb SPA with an SEO score worse than websites from before SEO had been dreamed up. I maintain one of my own. Ours has more than 1001 treasures in the node_modules folder too. Never will they be cleaned. Notably, the build takes the perfect five minutes I need to stretch my legs and get a coffee, and who would possibly tell other members of the team that this could have a whole new thirty second build system where the hot reload actually works? Not this thirsty dev. But sometimes, just sometimes, there's some juicy little piece of craft and artistry that tickles us and gets us in the mood for some actual thought-based coding. That for me has recently become a mysterious trick to make any site *instant*.
+
+I'm talking about making it *theoretically fast*... 
+
+Here's the thing about TCP, who gives a shit about it until they want to play a round of code golf because they have given up their downtime hobbies in favour of blogging about technology after a hard day working with it. But just maybe sometimes we should. The first packet you get is roughly 14KB, then the network has to get busy again before sending more. This costs time---real, measurable time. Latency that the most out of touch of us care about. So I made a rule for my own portfolio site (where you may or may not be reading this): if it doesn't fit in 14KB, it doesn't go anywhere.
+
+This has the benefit of making this site feel swifter than Hacker News, that tool catalogue people harp on about, and Berkshire Hathaway (plus I have actual text content on mine...) There are small, smart optimisations to have in our back pocket as developers, doesn't matter what framework. Things like eager loading on hover, creating front-end search indices, gzipping assets, subsetting fonts. Taking the debug symbols out is the *least* you can do for your users, but sometimes our abstractions have lulled us into forgetting we have responsibilities. There are about a million more I could make in my build script but right now it's earning its keep. 
+
+And fine, I'll admit it. You've seen the emojis in the build script. I got Claude to spit it out for me! And why not? I know what I want it to do and it does it. It turns my nice readable MD into HTML. It minifies my assets, it zips everything up. It's very capable of doing that. Just as much as it is writing CSS to about the same level as me (i.e. almost well enough) 
+
+I could probably trim some fat, but I don't need to. The data literally will not be broken down anymore. And that's why I care about our craft, we can still pick our battles easily. I'm not talking about manually sanding the knobs and knockers and getting beeswax from Bhutan. I'm talking about buzzing through my build assets with a circular saw and seeing what sticks. So, we can say that this site is fast. *Almost* theoretically so. Except that someone is consistently faster...
